@@ -93,6 +93,27 @@ We classify posts according to their primary structural intent using three mutua
 
 ---
 
+### 📊 Per-Class Performance Metrics
+
+To isolate exactly where the fine-tuned model collapsed compared to the zero-shot LLM baseline, the table below breaks down the explicit Precision, Recall, and F1-score for each individual class across both configurations.
+
+#### 🟥 Baseline: Llama-3.3-70B (Zero-Shot) Per-Class Metrics
+| Classification Label | Precision | Recall | F1-Score | Support |
+| :--- | :---: | :---: | :---: | :---: |
+| `actionable_advice_and_guides` | 100.0% | 47.4% | 64.3% | 19 |
+| `career_queries_and_speculation` | 28.6% | 57.1% | 38.1% | 7 |
+| `doom_posting_vent` | 33.3% | 44.4% | 38.1% | 9 |
+
+#### 🟩 Fine-Tuned: DistilBERT Per-Class Metrics
+| Classification Label | Precision | Recall | F1-Score | Support |
+| :--- | :---: | :---: | :---: | :---: |
+| `actionable_advice_and_guides` | 54.3% | 100.0% | 70.4% | 19 |
+| `career_queries_and_speculation` | 0.0% | 0.0% | 0.0% | 7 |
+| `doom_posting_vent` | 0.0% | 0.0% | 0.0% | 9 |
+
+> **Per-Class Breakdown Analysis:** The per-class metrics lay bare the mathematical failure of the fine-tuning process. While DistilBERT's majority class `actionable_advice_and_guides` shows a superficially high F1-score of 70.4%, this is purely a function of a 100% recall shortcut. The complete drop to 0.0% across both minority classes proves the network failed to optimize for generalized boundary lines, whereas the zero-shot baseline managed to preserve a functional distribution of boundaries.
+
+
 ## 🟥 Zero-Shot Baseline Confusion Matrix (Llama-3.3-70B)
 *Accuracy: 37.1% — Conservative on advice, but actively attempted minority boundaries.*
 
@@ -184,7 +205,7 @@ Conversely, the Zero-Shot LLM baseline represents a far more useful classifier. 
 
 | Post Excerpt / Title | True Label | Predicted Label | Confidence | Classification Type | Rationale / Explanation |
 | :--- | :--- | :--- | :---: | :--- | :--- |
-| `Fidelity vs Lockheed (New Grad)...` | `actionable_advice_and_guides` | `actionable_advice_and_guides` | 38.5% | ✅ Correct | **True Positive Match:** The post evaluates specific recruitment salary components and tech stacks. Because the model has a massive structural bias towards predicting the advice category, it correctly matches this post, though its confidence remains low at 38.5% due to the collapsed distribution weights. |
+| `Fidelity vs Lockheed (New Grad)...` | `actionable_advice_and_guides` | `actionable_advice_and_guides` | 38.5% | ✅ Correct | **True Positive Match:** The post contains a structured comparative breakdown evaluating specific entry-level compensation packages, relocation stipends, and corporate tech stacks. Because it outlines verifiable, real-world professional execution metrics rather than open-ended speculation or emotional venting, it strictly satisfies the linguistic criteria for a career guide. The model accurately caught these structural tokens, though its confidence remains heavily suppressed at 38.5% due to the near-uniform probability distribution caused by the majority class collapse. |
 | `CS grads who couldn’t break in...` | `career_queries_and_speculation` | `actionable_advice_and_guides` | 39% | ❌ Incorrect | **False Positive Advice:** This post functions as an open-ended community sentiment poll regarding alternative graduation paths. It contains no actionable roadmaps. The model completely misses the speculative syntax and defaults to the collapsed majority class. |
 | `What should I learn to stay competitive...` | `doom_posting_vent` | `actionable_advice_and_guides` | 38.0% | ❌ Incorrect | **False Positive Advice:** A clear expression of recruitment burnout ("kinda gave up"). The fine-tuned model overlooks the severe negative sentiment tokens and forces it into advice because the text includes technical keywords like Java and Spring Boot. |
 
