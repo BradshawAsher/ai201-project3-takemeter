@@ -3,6 +3,9 @@
 * **Google Colab**
 https://colab.research.google.com/drive/1b94kd3KdxXCVF8gVPaTXaRb53unBbGj5?usp=sharing
 
+* **YouTube Video**
+https://youtu.be/9C6BY2TNW-8
+
 
 ## 1. Community Choice & Reasoning
 * **Community:** `r/cscareerquestions`
